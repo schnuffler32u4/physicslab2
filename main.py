@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 V0 = 10.3
 xdata, ydata = np.loadtxt("fittry.csv", delimiter=",", skiprows=1, unpack=True, encoding='UTF8')
-xdata = 1000 * xdata / (2 * np.pi)
+xdata = 1000 * xdata * 2 * np.pi
 ydata = ydata * np.sqrt(2)
 M = 0.09
 
