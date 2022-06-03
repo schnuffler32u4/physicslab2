@@ -3,27 +3,14 @@ import numpy as np
 from scipy.optimize import fsolve
 
 
-def midpoint_double(f, a, b, c, d, nx, ny):
-    hx = (b - a) / nx
-    hy = (d - c) / ny
-    I = 0
-    for i in range(nx):
-        for j in range(ny):
-            xi = a + hx / 2 + i * hx
-            yj = c + hy / 2 + j * hy
-            I += hx * hy * f(xi, yj, dis)
-    return I
+def mutual(dis):
+    """The function takes the distance in meters as an input and outputs the mutual inductance between the coils."""
+    R = 0.105
 
+    def f(x, y):
+        return 200 ** 2 * 10 ** (-7) * R ** 2 * np.cos(x - y) / (np.sqrt(2 * R ** 2 * (1 - np.cos(x - y)) + dis ** 2))
 
-R = 0.105
-dis = 0.05
-
-
-def f(x, y):
-    return 200 ** 2 * 10 ** (-7) * R ** 2 * np.cos(x - y) / (np.sqrt(2 * R ** 2 * (1 - np.cos(x - y)) + dis ** 2))
-
-
-M = si.dblquad(f, 0, 2 * np.pi, 0, 2 * np.pi)[0]
+    return si.dblquad(f, 0, 2 * np.pi, 0, 2 * np.pi)[0]
 
 
 def circuit_values(a, b, c, d, e):
@@ -34,7 +21,7 @@ def circuit_values(a, b, c, d, e):
 
     def leq(x):
         return a / (x * C2) + C1 * (b - a * C1 * d) / (x - a * C1 / (x * C2)) * (
-                    d - (b - a * C1 * d) / (C2 * (x - a * C1 / (x * C2)))) + x / C1 - c
+                d - (b - a * C1 * d) / (C2 * (x - a * C1 / (x * C2)))) + x / C1 - c
 
     L2 = fsolve(leq, 1, maxfev=500000)[0]
     L1 = a / L2
