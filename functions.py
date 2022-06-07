@@ -74,3 +74,43 @@ def circuit_values(a, b, c, d, e):
     R1 = (b - a * C1 * d / L2) / (L2 - a * C1 / (L2 * C2))
     R2 = C1 * (d - R1 / C2)
     return [L1, L2, R1, R2, C1]
+
+
+def voltnores(x,L1,L2,C1):
+    """Returns the value of the voltage for given circuit values and omega (x), assuming C2 = 1e-10
+    R1 = 57 ohms and R2 = 7 ohms"""
+    R1 = 57
+    R2 = 7
+    a = L1 * L2
+    b = L1 * R2 + R1 * L2
+    c = L1 / 1e-10 + R1 * R2 + L2 / C1
+    d = R1 / 1e-10 + R2 / C1
+    e = 1 / (C1 * 1e-10)
+    return volt(x, a, b, c, d, e)
+
+def voltnores35(x,L1,L2,C1):
+    """Returns the value of the voltage for given circuit values and omega (x), assuming C2 = 1e-10
+    R1 = 57 ohms and R2 = 7 ohms"""
+    R1 = 57
+    R2 = 7
+    a = L1 * L2
+    b = L1 * R2 + R1 * L2
+    c = L1 / 1e-10 + R1 * R2 + L2 / C1
+    d = R1 / 1e-10 + R2 / C1
+    e = 1 / (C1 * 1e-10)
+    return voltdis(x, a, b, c, d, e, mutual(35))
+
+
+def roundup(x):
+    """Returns the input value rounded up to one significant figure."""
+    if int(np.log10(x)) == np.log10(x):
+        y = np.log10(x)
+    elif np.log10(x) < 0:
+        y = int(np.log10(x)) - 1
+    else:
+        y = int(np.log10(x))
+
+    if int(x * (10 ** (-y))) * 10 ** y != x:
+        return int(x * (10 ** (-y)) + 1) * 10 ** y
+    else:
+        return x
