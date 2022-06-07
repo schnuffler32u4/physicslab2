@@ -3,6 +3,7 @@ from scipy.optimize import curve_fit, least_squares
 import matplotlib.pyplot as plt
 import functions
 from matplotlib.widgets import Slider
+
 plt.style.reload_library()
 plt.style.use('extensys')
 
@@ -21,7 +22,7 @@ print(popt)
 print(functions.circuit_values(*popt))
 print(functions.letters(*functions.circuit_values(*popt)))
 plt.plot(xdata, functions.volt(xdata, *popt), label='Fit')
-plt.plot(xdata, ydata, label='DZata')
+plt.plot(xdata, ydata, label='Data')
 plt.plot(xdata, functions.voltvar(xdata, *functions.circuit_values(*popt)), label='Fit but with extracted RLC values')
 plt.xlabel('ω [rad/s]')
 plt.ylabel('Peak voltage [V]')
@@ -48,21 +49,24 @@ slider.on_changed(value_update)
 plt.show()
 
 xdis, ydis = np.loadtxt("vdis.csv", delimiter=",", skiprows=1, unpack=True, encoding='UTF8')
+xdis = xdis / 10
 ydis = ydis * np.sqrt(2)
 
 
 def vdis(x, a, b, c, d, e):
-    xfreq = np.linspace(0, 1000000, 10000)
+    xfreq = np.linspace(0, 1000000, 1000)
     y = np.zeros(len(x))
     for i in range(len(x)):
         y[i] = max(functions.voltdis(xfreq, a, b, c, d, e, functions.mutual(x[i] / 100)))
     return y
 
 
-popt1, pcov1 = curve_fit(vdis, xdis, ydis, p0=[*functions.letters(0.1, 0.1, 60, 7, 1e-10)], maxfev=500000)
-print(functions.circuit_values(*popt1))
-plt.plot(xdis, ydis)
-plt.plot(xdis, vdis(xdis, *popt1), label='fit')
-
+# popt1, pcov1 = curve_fit(vdis, xdis, ydis, p0=[*functions.letters(0.1, 5, 60, 7, 1e-10)], maxfev=5000)
+# print(functions.circuit_values(*popt1))
+plt.plot(xdis, ydis, label='data')
+# plt.plot(xdis, vdis(xdis, *popt1), label='fit')
+plt.plot(xdis, vdis(xdis, *functions.letters(2.7, 0.1, 60, 7, 1e-10)), label='model')
+plt.xlabel('Distance [cm]')
+plt.ylabel('First peak voltage [V]')
 plt.legend()
 plt.show()
