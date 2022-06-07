@@ -5,25 +5,28 @@ import functions
 from matplotlib.widgets import Slider
 
 plt.style.reload_library()
-plt.style.use('extensys')
+plt.style.use('extensys-ms')
 
 V0 = 10.3
-xdata, ydata = np.loadtxt("fittry.csv", delimiter=",", skiprows=1, unpack=True, encoding='UTF8')
+xdata, xerr, ydata, yerr = np.loadtxt("FM50results.csv", delimiter=",", skiprows=1, unpack=True, encoding='UTF8')
 xdata = 1000 * xdata * 2 * np.pi
 ydata = ydata * np.sqrt(2)
 newx, newy = np.loadtxt("fitcheck.csv", delimiter=",", skiprows=1, unpack=True, encoding='UTF8')
 newx = 1000 * newx * 2 * np.pi
 newy = newy * np.sqrt(2)
 
-popt, pcov = curve_fit(functions.volt, xdata, ydata, p0=[0.01, 1.4, 2e9, 1.4e14, 1e20], maxfev=500000)
+# popt, pcov = curve_fit(functions.volt, xdata, ydata, p0=[0.01, 1.4, 2e9, 1.4e14, 1e20], maxfev=500000)
 print(functions.M)
-
+popt, pcov = curve_fit(functions.voltvar, xdata, ydata, p0=[2.3, 0.1, 57, 7, 1e-10], maxfev=500000)
+popt = abs(popt)
 print(popt)
-print(functions.circuit_values(*popt))
-print(functions.letters(*functions.circuit_values(*popt)))
-plt.plot(xdata, functions.volt(xdata, *popt), label='Fit')
+# print(functions.circuit_values(*popt))
+# print(functions.letters(*functions.circuit_values(*popt)))
+print(np.sqrt(np.diag(pcov)))
+# plt.plot(xdata, functions.volt(xdata, *popt), label='Fit')
+plt.plot(xdata, functions.voltvar(xdata, *popt), label='Fit')
 plt.plot(xdata, ydata, label='Data')
-plt.plot(xdata, functions.voltvar(xdata, *functions.circuit_values(*popt)), label='Fit but with extracted RLC values')
+# plt.plot(xdata, functions.voltvar(xdata, 0.0409, 0.086, 57, 7, 1.106e-10), label='Fit but with extracted RLC values')
 plt.xlabel('ω [rad/s]')
 plt.ylabel('Peak voltage [V]')
 plt.legend()
@@ -65,7 +68,19 @@ def vdis(x, a, b, c, d, e):
 # print(functions.circuit_values(*popt1))
 plt.plot(xdis, ydis, label='data')
 # plt.plot(xdis, vdis(xdis, *popt1), label='fit')
-plt.plot(xdis, vdis(xdis, *functions.letters(2.7, 0.1, 60, 7, 1e-10)), label='model')
+q, = plt.plot(xdis, vdis(xdis, *functions.letters(2.7, 0.1, 60, 7, 1e-10)), label='model')
+bxslider = plt.axes([0.2, 0.1, 0.65, 0.05])
+cxslider = plt.axes([0.2, 0, 0.65, 0.05])
+Lslider = Slider(ax=bxslider, valmin=0, valmax=5, valinit=0.1, label='L1 [H]')
+Rslider = Slider(ax=cxslider, valmin=0, valmax=60, valinit=57, label='R1 [Ω]')
+
+
+def newupdate(val):
+    q.set_ydata(vdis(xdis, *functions.letters(Lslider.val, 0.1, Rslider.val, 7, 1e-10)))
+
+
+Lslider.on_changed(newupdate)
+Rslider.on_changed(newupdate)
 plt.xlabel('Distance [cm]')
 plt.ylabel('First peak voltage [V]')
 plt.legend()
