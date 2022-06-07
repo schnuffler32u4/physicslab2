@@ -3,7 +3,8 @@ from scipy.optimize import curve_fit, least_squares
 import matplotlib.pyplot as plt
 import functions
 from matplotlib.widgets import Slider
-# plt.style.use('extensys')
+plt.style.reload_library()
+plt.style.use('extensys')
 
 V0 = 10.3
 xdata, ydata = np.loadtxt("fittry.csv", delimiter=",", skiprows=1, unpack=True, encoding='UTF8')
