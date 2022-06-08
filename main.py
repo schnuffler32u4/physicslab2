@@ -15,7 +15,11 @@ newx, newxerror, newy, newyerror = np.loadtxt("FM350results.csv", delimiter=",",
 newx = 1000 * newx * 2 * np.pi
 newy = newy * np.sqrt(2)
 
-# Plotting the data vs the measured values for a distance of 5 cm
+xfr, _, yfr, _ = np.loadtxt("NRFresults1-3.csv", delimiter=",", skiprows=1, unpack=True, encoding='UTF8')
+xfr = xfr / 10
+yfr = 1000 * 2 * np.pi * yfr
+
+# Plotting the data vs the predicted values for a distance of 5 cm
 plt.plot(xdata, functions.voltvar(xdata, 0.1, 0.1, 57, 7, 1e-10), 'r-', label='Prediction')
 plt.errorbar(xdata, ydata, xerr=xerr, yerr=yerr, c='c')
 plt.scatter(xdata, ydata, label='Measurements', c='c', s=15, marker="^")
@@ -26,8 +30,8 @@ plt.legend(loc="upper right", borderaxespad=0.5)
 plt.title("Theoretical model compared with data of frequency versus voltage for a distance of 5 cm")
 plt.show()
 
-# Plotting the data vs the measured values for a distance of 35 cm
-plt.plot(newx, functions.voltdis(newx, 0.1, 0.1, 57, 7, 1e-10, functions.mutual(35)), 'r-', label='Prediction')
+# Plotting the data vs the predicted values for a distance of 35 cm
+plt.plot(newx, functions.voltdis(newx, 0.1, 0.1, 57, 7, 1e-10, functions.mutual(0.35)), 'r-', label='Prediction')
 plt.errorbar(newx, newy, xerr=newxerror, yerr=newyerror, c='c')
 plt.scatter(newx, newy, label='Measurements', c='c', s=15, marker="^")
 # plt.plot(xdata, functions.voltvar(xdata, 0.0409, 0.086, 57, 7, 1.106e-10), label='Fit but with extracted RLC values')
@@ -52,7 +56,7 @@ plt.legend(loc="upper right", borderaxespad=0.5)
 plt.show()
 
 # Fitting the data and plotting with the correct resistance for 35 cm
-norespopt, norespcov = curve_fit(functions.voltnores35, newx, newy, p0=[0.1, 0.1, 1e-10], maxfev=500000)
+"""norespopt, norespcov = curve_fit(functions.voltnores35, newx, newy, p0=[0.1, 0.1, 1e-10], maxfev=500000)
 norespopt = abs(norespopt)  # making sure the values are positive
 print(
     f"with L1 = {norespopt[0]}±{functions.roundup(np.sqrt(np.diag(norespcov))[0])} H, L2 = {norespopt[1]}±{functions.roundup(np.sqrt(np.diag(norespcov))[1])} H, C1 = {norespopt[2]}±{functions.roundup(np.sqrt(np.diag(norespcov))[2])} F")
@@ -63,7 +67,7 @@ plt.scatter(newx, newy, label='Measurements', c='c', s=15, marker="^")
 plt.xlabel('ω [rad/s]')
 plt.ylabel('Peak voltage [V]')
 plt.legend(loc="upper right", borderaxespad=0.5)
-plt.show()
+plt.show()"""
 
 # Fitting the data for all values for 5 cm
 print(functions.M)
@@ -80,14 +84,14 @@ plt.ylabel('Peak voltage [V]')
 plt.legend(loc="upper right", borderaxespad=0.5)
 plt.show()
 
-# Fitting the data for 35 cm
-functions.M = functions.mutual(35) * 100
+# Fitting the data for all values for 35 cm
+functions.M = functions.mutual(0.35)
 print(functions.M)
 popt, pcov = curve_fit(functions.voltvar, newx, newy, p0=[0.1, 0.1, 57, 7, 1e-10], maxfev=500000)
 popt = abs(popt)  # making sure the values are positive
 print(
     f"Full fit at 35 cm: L1 = {popt[0]}±{functions.roundup(np.sqrt(np.diag(pcov))[0])} H, L2 = {popt[1]}±{functions.roundup(np.sqrt(np.diag(pcov))[1])} H, R1 = {popt[2]}±{functions.roundup(np.sqrt(np.diag(pcov))[2])} Ω, R2 = {popt[3]}±{functions.roundup(np.sqrt(np.diag(pcov))[3])} Ω, C1 = {popt[4]}±{functions.roundup(np.sqrt(np.diag(pcov))[4])} F")
-functions.M = functions.mutual(35)
+functions.M = functions.mutual(0.35)
 plt.plot(newx, functions.voltvar(newx, *popt), 'r-', label='Fit with ')
 plt.errorbar(newx, newy, xerr=newxerror, yerr=newyerror, c='c')
 plt.scatter(newx, newy, label='Measurements', c='c', s=15, marker="^")
@@ -139,15 +143,15 @@ def fdis(x, L1, L2, R1, R2, C1):
     return yfreq
 
 
-popt1, pcov1 = curve_fit(vdis, xdis, ydis, p0=[5, 0.1, 60, 7, 1e-10], bounds=(0,70), maxfev=5000)
+popt1, pcov1 = curve_fit(vdis, xdis, ydis, p0=[5, 0.1, 60, 7, 1e-10], bounds=(0, 70), maxfev=5000)
 errs = np.sqrt(np.diag(abs(pcov1)))
 print(
     f"Full fit at over length: L1 = {popt1[0]}±{functions.roundup(errs[0])} H, L2 = {popt1[1]}±{functions.roundup(errs[1])} H, R1 = {popt1[2]}±{functions.roundup(errs[2])} Ω, R2 = {popt1[3]}±{functions.roundup(errs[3])} Ω, C1 = {popt1[4]}±{functions.roundup(errs[4])} F")
 
 plt.plot(xdis, ydis, c='c', label='data')
-# plt.plot(xdis, vdis(xdis, *popt1), label='fit')
 q, = plt.plot(xdis, vdis(xdis, *popt1), 'r-', label='Fit over distance with ')
 plt.plot(xdis, vdis(xdis, 4, 0.1, 57, 7, 1e-10), 'g-', label='Interesting parameters pizda ma-tii de sci-py ')
+
 
 # bxslider = plt.axes([0.2, 0.1, 0.65, 0.05])
 # cxslider = plt.axes([0.2, 0, 0.65, 0.05])
@@ -163,5 +167,18 @@ def newupdate(val):
 # Rslider.on_changed(newupdate)
 plt.xlabel('Distance [cm]')
 plt.ylabel('First peak voltage [V]')
+plt.legend()
+plt.show()
+
+popt1, pcov1 = curve_fit(fdis, xfr, yfr, p0=[0.1, 0.1, 57, 7, 1e-10], maxfev=5000)
+errs = np.sqrt(np.diag(abs(pcov1)))
+errs = [1, 1, 1, 1, 1]
+print(
+    f"Full fit frequency vs length: L1 = {popt1[0]}±{functions.roundup(errs[0])} H, L2 = {popt1[1]}±{functions.roundup(errs[1])} H, R1 = {popt1[2]}±{functions.roundup(errs[2])} Ω, R2 = {popt1[3]}±{functions.roundup(errs[3])} Ω, C1 = {popt1[4]}±{functions.roundup(errs[4])} F")
+plt.plot(xfr, yfr, c='c', label='data')
+plt.plot(xfr, fdis(xfr, *popt1), 'r-', label='Fit over distance with ')
+plt.plot(xfr, fdis(xfr, 1500, 1500, 1500, 1500, 1e-10), 'g-', label='Interesting parameters pizda ma-tii de sci-py ')
+plt.xlabel('Distance [cm]')
+plt.ylabel('First peak angular frequency [rad/s]')
 plt.legend()
 plt.show()

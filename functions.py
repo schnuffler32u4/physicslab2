@@ -99,7 +99,7 @@ def voltnores35(x, L1, L2, C1):
     c = L1 / 1e-10 + R1 * R2 + L2 / C1
     d = R1 / 1e-10 + R2 / C1
     e = 1 / (C1 * 1e-10)
-    return voltdis(x, a, b, c, d, e, mutual(35))
+    return voltdis(x, a, b, c, d, e, mutual(0.35))
 
 
 def roundup(x):
