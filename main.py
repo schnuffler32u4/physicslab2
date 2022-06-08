@@ -56,7 +56,8 @@ norespopt, norespcov = curve_fit(functions.voltnores35, newx, newy, p0=[0.1, 0.1
 norespopt = abs(norespopt)  # making sure the values are positive
 print(
     f"with L1 = {norespopt[0]}±{functions.roundup(np.sqrt(np.diag(norespcov))[0])} H, L2 = {norespopt[1]}±{functions.roundup(np.sqrt(np.diag(norespcov))[1])} H, C1 = {norespopt[2]}±{functions.roundup(np.sqrt(np.diag(norespcov))[2])} F")
-plt.plot(newx, functions.voltnores35(newx, *norespopt), 'r-', label='Fit with L1 = 0±10000 H, L2 = 0±400 H, C1 = 0±8e-6')
+plt.plot(newx, functions.voltnores35(newx, *norespopt), 'r-',
+         label='Fit with L1 = 0±10000 H, L2 = 0±400 H, C1 = 0±8e-6')
 plt.errorbar(newx, newy, xerr=newxerror, yerr=newyerror, c='c')
 plt.scatter(newx, newy, label='Measurements', c='c', s=15, marker="^")
 plt.xlabel('ω [rad/s]')
@@ -70,7 +71,8 @@ popt, pcov = curve_fit(functions.voltvar, xdata, ydata, p0=[2.3, 0.1, 57, 7, 1e-
 popt = abs(popt)  # making sure the values are positive
 print(
     f"Full fit at 5 cm: L1 = {popt[0]}±{functions.roundup(np.sqrt(np.diag(pcov))[0])} H, L2 = {popt[1]}±{functions.roundup(np.sqrt(np.diag(pcov))[1])} H, R1 = {popt[2]}±{functions.roundup(np.sqrt(np.diag(pcov))[2])} Ω, R2 = {popt[3]}±{functions.roundup(np.sqrt(np.diag(pcov))[3])} Ω, C1 = {popt[4]}±{functions.roundup(np.sqrt(np.diag(pcov))[4])} F")
-plt.plot(xdata, functions.voltvar(xdata, *popt), 'r-', label='Fit with L1 = 0.0403±0.0002 H, L2 = 0.08715±0.00002 H, R1 = 1067±3 Ω, R2 = 1034±5 Ω, C1 = 1.128±0.005e-10 F')
+plt.plot(xdata, functions.voltvar(xdata, *popt), 'r-',
+         label='Fit with L1 = 0.0403±0.0002 H, L2 = 0.08715±0.00002 H, R1 = 1067±3 Ω, R2 = 1034±5 Ω, C1 = 1.128±0.005e-10 F')
 plt.errorbar(xdata, ydata, xerr=xerr, yerr=yerr, c='c')
 plt.scatter(xdata, ydata, label='Measurements', c='c', s=15, marker="^")
 plt.xlabel('ω [rad/s]')
@@ -79,7 +81,7 @@ plt.legend(loc="upper right", borderaxespad=0.5)
 plt.show()
 
 # Fitting the data for 35 cm
-functions.M = functions.mutual(35)*100
+functions.M = functions.mutual(35) * 100
 print(functions.M)
 popt, pcov = curve_fit(functions.voltvar, newx, newy, p0=[0.1, 0.1, 57, 7, 1e-10], maxfev=500000)
 popt = abs(popt)  # making sure the values are positive
@@ -113,32 +115,48 @@ xdis = xdis / 10
 ydis = ydis * np.sqrt(2)
 
 
-def vdis(x, a, b, c, d, e):
+def vdis(x, L1, L2, R1, R2, C1):
     xfreq = np.linspace(0, 1000000, 1000)
     y = np.zeros(len(x))
     yfreq = np.zeros(len(x))
     for i in range(len(x)):
-        y[i] = max(functions.voltdis(xfreq, a, b, c, d, e, functions.mutual(x[i] / 100)))
-        for r in functions.voltdis(xfreq, a, b, c, d, e, functions.mutual(x[i] / 100)):
+        y[i] = max(functions.voltdis(xfreq, *functions.letters(L1, L2, R1, R2, C1), functions.mutual(x[i] / 100)))
+        for r in functions.voltdis(xfreq, *functions.letters(L1, L2, R1, R2, C1), functions.mutual(x[i] / 100)):
             if r == y[i]:
                 yfreq[i] = xfreq[i]
     return y
 
 
-popt1, pcov1 = curve_fit(vdis, xdis, ydis, p0=[*functions.letters(0.1, 5, 60, 7, 1e-10)], maxfev=5000)
-print(f"Full fit at over length: L1 = {popt[0]}±{functions.roundup(np.sqrt(np.diag(pcov))[0])} H, L2 = {popt[1]}±{functions.roundup(np.sqrt(np.diag(pcov))[1])} H, R1 = {popt[2]}±{functions.roundup(np.sqrt(np.diag(pcov))[2])} Ω, R2 = {popt[3]}±{functions.roundup(np.sqrt(np.diag(pcov))[3])} Ω, C1 = {popt[4]}±{functions.roundup(np.sqrt(np.diag(pcov))[4])} F")
+def fdis(x, L1, L2, R1, R2, C1):
+    xfreq = np.linspace(0, 1000000, 1000)
+    y = np.zeros(len(x))
+    yfreq = np.zeros(len(x))
+    for i in range(len(x)):
+        y[i] = max(functions.voltdis(xfreq, *functions.letters(L1, L2, R1, R2, C1), functions.mutual(x[i] / 100)))
+        for r in functions.voltdis(xfreq, *functions.letters(L1, L2, R1, R2, C1), functions.mutual(x[i] / 100)):
+            if r == y[i]:
+                yfreq[i] = xfreq[i]
+    return yfreq
 
-plt.plot(xdis, ydis, label='data')
+
+popt1, pcov1 = curve_fit(vdis, xdis, ydis, p0=[5, 0.1, 60, 7, 1e-10], bounds=(0,70), maxfev=5000)
+errs = np.sqrt(np.diag(abs(pcov1)))
+print(
+    f"Full fit at over length: L1 = {popt1[0]}±{functions.roundup(errs[0])} H, L2 = {popt1[1]}±{functions.roundup(errs[1])} H, R1 = {popt1[2]}±{functions.roundup(errs[2])} Ω, R2 = {popt1[3]}±{functions.roundup(errs[3])} Ω, C1 = {popt1[4]}±{functions.roundup(errs[4])} F")
+
+plt.plot(xdis, ydis, c='c', label='data')
 # plt.plot(xdis, vdis(xdis, *popt1), label='fit')
-q, = plt.plot(xdis, vdis(xdis, *functions.letters(2.7, 0.1, 60, 7, 1e-10))[0], 'r-', label='Fit over distance with ')
+q, = plt.plot(xdis, vdis(xdis, *popt1), 'r-', label='Fit over distance with ')
+plt.plot(xdis, vdis(xdis, 4, 0.1, 57, 7, 1e-10), 'g-', label='Interesting parameters pizda ma-tii de sci-py ')
+
 # bxslider = plt.axes([0.2, 0.1, 0.65, 0.05])
 # cxslider = plt.axes([0.2, 0, 0.65, 0.05])
 # Lslider = Slider(ax=bxslider, valmin=0, valmax=5, valinit=0.1, label='L1 [H]')
 # Rslider = Slider(ax=cxslider, valmin=0, valmax=60, valinit=57, label='R1 [Ω]')
 
 
-# def newupdate(val):
-#    q.set_ydata(vdis(xdis, *functions.letters(Lslider.val, 0.1, 57, Rslider.val, 1e-10)))
+def newupdate(val):
+    q.set_ydata(vdis(xdis, *functions.letters(Lslider.val, 0.1, 57, Rslider.val, 1e-10)))
 
 
 # Lslider.on_changed(newupdate)

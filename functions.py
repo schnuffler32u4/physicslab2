@@ -76,7 +76,7 @@ def circuit_values(a, b, c, d, e):
     return [L1, L2, R1, R2, C1]
 
 
-def voltnores(x,L1,L2,C1):
+def voltnores(x, L1, L2, C1):
     """Returns the value of the voltage for given circuit values and omega (x), assuming C2 = 1e-10
     R1 = 57 ohms and R2 = 7 ohms"""
     R1 = 57
@@ -88,7 +88,8 @@ def voltnores(x,L1,L2,C1):
     e = 1 / (C1 * 1e-10)
     return volt(x, a, b, c, d, e)
 
-def voltnores35(x,L1,L2,C1):
+
+def voltnores35(x, L1, L2, C1):
     """Returns the value of the voltage for given circuit values and omega (x), assuming C2 = 1e-10
     R1 = 57 ohms and R2 = 7 ohms"""
     R1 = 57
