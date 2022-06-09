@@ -1,5 +1,6 @@
 import scipy.integrate as si
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.optimize import fsolve
 
 V0 = 10.3
@@ -167,3 +168,30 @@ def f2dis(x, L1, L2, R1, R2, C1):
             if o[j + 1] < o[j] and o[j - 1] < o[j]:
                 yfreq[i] = xfreq[j]
     return yfreq
+
+
+def double_plot(x1, x2, y1, y2, x1err, x2err, y1err, y2err, xfmodel, yfmodel, xvmodel, yvmodel, title, resistor):
+    fig = plt.figure()
+
+    plt.xticks(fontsize=14)
+    plt.xlabel("Coil separation [mm]", fontsize=17)
+    plt.title("Coil separation v " + title + " peak voltage and resonance frequency, " + resistor, fontsize=15)
+
+    ax1 = plt.gca()
+    plt.scatter(x2, y2, c='r', label="Resonance frequency", s=23, marker="^")
+    plt.errorbar(x2, y2, xerr=x2err, yerr=y2err, c='r')
+    plt.plot(xfmodel, yfmodel, 'r-', label="Model prediction for resonance frequency")
+    plt.ylabel("AC frequency [kHz]", fontsize=17, color='r')
+    plt.yticks(fontsize=14, color='r')
+
+    ax2 = ax1.twinx()
+    plt.scatter(x1, y1, c='g', label="Peak rms voltage", s=23, marker="^")
+    plt.errorbar(x1, y1, xerr=x1err, yerr=y1err, c='g')
+    plt.plot(xvmodel, yvmodel, 'g-', label="Model prediction for rms voltage")
+    plt.ylabel("Average rms voltage [V]", fontsize=17, color='g')
+    plt.yticks(fontsize=14, color='g')
+
+    fig.legend(loc="upper right", bbox_to_anchor=(0.99, 0.75), bbox_transform=ax1.transAxes, fontsize=15)
+    plt.tight_layout()
+    plt.savefig("Coil separation v " + title + " peak voltage and resonance frequency, " + resistor + ".jpg", dpi=500)
+    plt.show()
