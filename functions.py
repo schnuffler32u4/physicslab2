@@ -115,3 +115,55 @@ def roundup(x):
         return int(x * (10 ** (-y)) + 1) * 10 ** y
     else:
         return x
+
+
+def v1dis(x, L1, L2, R1, R2, C1):
+    """Takes as input the distance and circuit values and returns the voltage of the first peak"""
+    xfreq = np.linspace(188e3, 1000000, 10000)
+    y = np.zeros(len(x))
+    for i in range(len(x)):
+        o = voltdis(xfreq, *letters(L1, L2, R1, R2, C1), mutual(x[i] / 100))
+        for j in range(1, len(xfreq) - 1):
+            if o[j + 1] < o[j] and o[j - 1] < o[j]:
+                y[i] = xfreq[j]
+                break
+    return y
+
+
+def f1dis(x, L1, L2, R1, R2, C1):
+    """Takes as input the distance and circuit values and returns the frequency of the first peak"""
+    xfreq = np.linspace(100e3, 1000e3, 10000)
+    y = np.zeros(len(x))
+    yfreq = np.zeros(len(x))
+    for i in range(len(x)):
+        o = voltdis(xfreq, *letters(L1, L2, R1, R2, C1), mutual(x[i] / 100))
+        for j in range(1, len(xfreq) - 1):
+            if o[j + 1] < o[j] and o[j - 1] < o[j]:
+                yfreq[i] = xfreq[j]
+                break
+    return yfreq
+
+
+def v2dis(x, L1, L2, R1, R2, C1):
+    """Takes as input the distance and circuit values and returns the voltage of the sceond peak"""
+    xfreq = np.linspace(188e3, 1000000, 10000)
+    y = np.zeros(len(x))
+    for i in range(len(x)):
+        o = voltdis(xfreq, *letters(L1, L2, R1, R2, C1), mutual(x[i] / 100))
+        for j in range(1, len(xfreq) - 1):
+            if o[j + 1] < o[j] and o[j - 1] < o[j]:
+                y[i] = xfreq[j]
+    return y
+
+
+def f2dis(x, L1, L2, R1, R2, C1):
+    """Takes as input the distance and circuit values and returns the frequency of the second peak"""
+    xfreq = np.linspace(100e3, 1000e3, 10000)
+    y = np.zeros(len(x))
+    yfreq = np.zeros(len(x))
+    for i in range(len(x)):
+        o = voltdis(xfreq, *letters(L1, L2, R1, R2, C1), mutual(x[i] / 100))
+        for j in range(1, len(xfreq) - 1):
+            if o[j + 1] < o[j] and o[j - 1] < o[j]:
+                yfreq[i] = xfreq[j]
+    return yfreq
