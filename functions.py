@@ -175,7 +175,7 @@ def double_plot(x1, x2, y1, y2, x1err, x2err, y1err, y2err, xfmodel, yfmodel, xv
 
     plt.xticks(fontsize=14)
     plt.xlabel("Coil separation [mm]", fontsize=17)
-    plt.title("Coil separation v " + title + " peak voltage and resonance frequency, " + resistor, fontsize=15)
+    # plt.title("Coil separation v " + title + " peak voltage and resonance frequency, " + resistor, fontsize=15)
 
     ax1 = plt.gca()
     plt.scatter(x2, y2, c='r', label="Resonance frequency", s=23, marker="^")
@@ -194,4 +194,4 @@ def double_plot(x1, x2, y1, y2, x1err, x2err, y1err, y2err, xfmodel, yfmodel, xv
     fig.legend(loc="upper right", bbox_to_anchor=(0.99, 0.75), bbox_transform=ax1.transAxes, fontsize=15)
     plt.tight_layout()
     plt.savefig("Coil separation v " + title + " peak voltage and resonance frequency, " + resistor + ".jpg", dpi=500)
-    plt.show()
+    # plt.show()
