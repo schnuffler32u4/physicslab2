@@ -92,7 +92,7 @@ plt.savefig("Fitting the values with the correct resistances for a distance of 5
 plt.show()
 
 # Fitting the data and plotting with the correct resistance for 35 cm
-norespopt, norespcov = curve_fit(functions.voltnores35, newx, newy, p0=[0.1, 0.1, 1e-10], maxfev=500000)
+'''norespopt, norespcov = curve_fit(functions.voltnores35, newx, newy, p0=[0.1, 0.1, 1e-10], maxfev=500000)
 norespopt = abs(norespopt)  # making sure the values are positive
 print(
     f"with L1 = {norespopt[0]}±{functions.roundup(np.sqrt(np.diag(norespcov))[0])} H, L2 = {norespopt[1]}±{functions.roundup(np.sqrt(np.diag(norespcov))[1])} H, C1 = {norespopt[2]}±{functions.roundup(np.sqrt(np.diag(norespcov))[2])} F")
@@ -105,7 +105,7 @@ plt.ylabel('Peak voltage [V]')
 plt.legend(loc="upper right", borderaxespad=0.5)
 plt.title("Fitting the values with the correct resistances for a distance of 35 cm")
 plt.savefig("Fitting the values with the correct resistances for a distance of 35 cm.jpg", dpi=500)
-plt.show()
+plt.show()'''
 
 # Fitting the data for all values for 5 cm
 print(functions.M)
@@ -139,8 +139,8 @@ plt.scatter(newx, newy, label='Measurements', c='c', s=15, marker="^")
 plt.xlabel('ω [rad/s]')
 plt.ylabel('Peak voltage [V]')
 plt.legend(loc="upper right", borderaxespad=0.5)
-plt.title("Fitting the values for a distance of 5 cm")
-plt.savefig("Fitting the values for a distance of 5 cm.jpg", dpi=500)
+plt.title("Fitting the values for a distance of 35 cm")
+plt.savefig("Fitting the values for a distance of 35 cm.jpg", dpi=500)
 plt.show()
 
 p, = plt.plot(xdata, functions.volt(xdata, *a), 'r-')
