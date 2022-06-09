@@ -24,8 +24,8 @@ xdis = xdis / 10
 ydis = ydis * np.sqrt(2)
 
 # Plotting the data vs the predicted values for a distance of 5 cm
-xqr = np.linspace(200e3, 1000e3, 10000)
-plt.plot(xdata, functions.voltvar(xdata, 0.1, 0.1, 57, 7, 1e-10), 'r-', label='Prediction')
+xqr = np.linspace(xdata[0], xdata[-1], 10000)
+plt.plot(xqr, functions.voltvar(xqr, 0.1, 0.1, 57, 7, 1e-10), 'r-', label='Prediction')
 plt.errorbar(xdata, ydata, xerr=xerr, yerr=yerr, c='c')
 plt.scatter(xdata, ydata, label='Measurements', c='c', s=15, marker="^")
 # plt.plot(xdata, functions.voltvar(xdata, 0.0409, 0.086, 57, 7, 1.106e-10), label='Fit but with extracted RLC values')
@@ -36,7 +36,8 @@ plt.title("Theoretical model compared with data of frequency versus voltage for 
 plt.show()
 
 # Plotting the data vs the predicted values for a distance of 35 cm
-plt.plot(newx, functions.voltdis(newx, 0.1, 0.1, 57, 7, 1e-10, functions.mutual(0.35)), 'r-', label='Prediction')
+newxqr = np.linspace(newx[0], newx[-1], 10000)
+plt.plot(newxqr, functions.voltdis(newxqr, 0.1, 0.1, 57, 7, 1e-10, functions.mutual(0.35)), 'r-', label='Prediction')
 plt.errorbar(newx, newy, xerr=newxerror, yerr=newyerror, c='c')
 plt.scatter(newx, newy, label='Measurements', c='c', s=15, marker="^")
 # plt.plot(xdata, functions.voltvar(xdata, 0.0409, 0.086, 57, 7, 1.106e-10), label='Fit but with extracted RLC values')
@@ -51,7 +52,7 @@ norespopt, norespcov = curve_fit(functions.voltnores, xdata, ydata, p0=[0.1, 0.1
 norespopt = abs(norespopt)  # making sure the values are positive
 print(
     f"with L1 = {norespopt[0]}±{functions.roundup(np.sqrt(np.diag(norespcov))[0])} H, L2 = {norespopt[1]}±{functions.roundup(np.sqrt(np.diag(norespcov))[1])} H, C1 = {norespopt[2]}±{functions.roundup(np.sqrt(np.diag(norespcov))[2])} F")
-plt.plot(xdata, functions.voltnores(xdata, *norespopt), 'r-', label='Fit with L1 = 0.022±0.004 H, L2 = 0.0913±0.0003 '
+plt.plot(xqr, functions.voltnores(xqr, *norespopt), 'r-', label='Fit with L1 = 0.022±0.004 H, L2 = 0.0913±0.0003 '
                                                                     'H, C = 1.4±0.2e-10 F')
 plt.errorbar(xdata, ydata, xerr=xerr, yerr=yerr, c='c')
 plt.scatter(xdata, ydata, label='Measurements', c='c', s=15, marker="^")
@@ -80,7 +81,7 @@ popt, pcov = curve_fit(functions.voltvar, xdata, ydata, p0=[2.3, 0.1, 57, 7, 1e-
 popt = abs(popt)  # making sure the values are positive
 print(
     f"Full fit at 5 cm: L1 = {popt[0]}±{functions.roundup(np.sqrt(np.diag(pcov))[0])} H, L2 = {popt[1]}±{functions.roundup(np.sqrt(np.diag(pcov))[1])} H, R1 = {popt[2]}±{functions.roundup(np.sqrt(np.diag(pcov))[2])} Ω, R2 = {popt[3]}±{functions.roundup(np.sqrt(np.diag(pcov))[3])} Ω, C1 = {popt[4]}±{functions.roundup(np.sqrt(np.diag(pcov))[4])} F")
-plt.plot(xdata, functions.voltvar(xdata, *popt), 'r-',
+plt.plot(xqr, functions.voltvar(xqr, *popt), 'r-',
          label='Fit with L1 = 0.0403±0.0002 H, L2 = 0.08715±0.00002 H, R1 = 1067±3 Ω, R2 = 1034±5 Ω, '
                'C1 = 1.128±0.005e-10 F')
 plt.errorbar(xdata, ydata, xerr=xerr, yerr=yerr, c='c')
@@ -98,7 +99,7 @@ popt = abs(popt)  # making sure the values are positive
 print(
     f"Full fit at 35 cm: L1 = {popt[0]}±{functions.roundup(np.sqrt(np.diag(pcov))[0])} H, L2 = {popt[1]}±{functions.roundup(np.sqrt(np.diag(pcov))[1])} H, R1 = {popt[2]}±{functions.roundup(np.sqrt(np.diag(pcov))[2])} Ω, R2 = {popt[3]}±{functions.roundup(np.sqrt(np.diag(pcov))[3])} Ω, C1 = {popt[4]}±{functions.roundup(np.sqrt(np.diag(pcov))[4])} F")
 functions.M = functions.mutual(0.35)
-plt.plot(newx, functions.voltvar(newx, *popt), 'r-', label='Fit with ')
+plt.plot(newxqr, functions.voltvar(newxqr, *popt), 'r-', label='Fit with ')
 plt.errorbar(newx, newy, xerr=newxerror, yerr=newyerror, c='c')
 plt.scatter(newx, newy, label='Measurements', c='c', s=15, marker="^")
 plt.xlabel('ω [rad/s]')
