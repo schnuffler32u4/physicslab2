@@ -64,7 +64,7 @@ plt.show()
 
 # Plotting the data vs the predicted values for a distance of 35 cm
 newxqr = np.linspace(newx[0], newx[-1], 10000)
-plt.plot(newxqr, functions.voltdis(newxqr, 0.1, 0.1, 57, 7, 1e-10, functions.mutual(0.35)), 'r-', label='Prediction')
+plt.plot(xqr, functions.voltdis(xqr, *functions.letters(0.1, 0.1, 57, 7, 1e-10), functions.mutual(0.35)), 'r-', label='Prediction')
 plt.errorbar(newx, newy, xerr=newxerror, yerr=newyerror, c='c')
 plt.scatter(newx, newy, label='Measurements', c='c', s=15, marker="^")
 # plt.plot(xdata, functions.voltvar(xdata, 0.0409, 0.086, 57, 7, 1.106e-10), label='Fit but with extracted RLC values')
@@ -101,7 +101,7 @@ plt.plot(newx, functions.voltnores35(newx, *norespopt), 'r-',
 plt.errorbar(newx, newy, xerr=newxerror, yerr=newyerror, c='c')
 plt.scatter(newx, newy, label='Measurements', c='c', s=15, marker="^")
 plt.xlabel('ω [rad/s]')
-plt.ylabel('Peak voltage [V]')
+plt.ylabel('Peak 0.1, 0.1, 57, 7, 1e-10 [V]')
 plt.legend(loc="upper right", borderaxespad=0.5)
 # plt.title("Fitting the values with the correct resistances for a distance of 35 cm")
 plt.savefig("Fitting the values with the correct resistances for a distance of 35 cm.jpg", dpi=500)
@@ -124,7 +124,7 @@ plt.legend(loc="upper right", borderaxespad=0.5)
 # plt.title("Fitting the values for a distance of 5 cm")
 plt.savefig("Fitting the values for a distance of 5 cm.jpg", dpi=500)
 plt.show()
-a = popt
+a = [0.1,0.1,57,7,1e-10]
 # Fitting the data for all values for 35 cm
 functions.M = functions.mutual(0.35)
 print(functions.M)
@@ -143,7 +143,7 @@ plt.legend(loc="upper right", borderaxespad=0.5)
 plt.savefig("Fitting the values for a distance of 35 cm.jpg", dpi=500)
 plt.show()
 
-p, = plt.plot(xdata, functions.volt(xdata, *a), 'r-')
+p, = plt.plot(xqr, functions.volt(xqr, *a), 'r-')
 plt.ylim(0, 100)
 axslider = plt.axes([0.1, 0, 0.8, 0.05])
 slider = Slider(ax=axslider, valmin=5, valmax=35, valinit=5, label='Distance (cm)')
@@ -151,7 +151,7 @@ slider = Slider(ax=axslider, valmin=5, valmax=35, valinit=5, label='Distance (cm
 
 def value_update(val):
     M = functions.mutual(slider.val / 100)
-    p.set_ydata(functions.voltdis(xdata, *functions.letters(*a), M))
+    p.set_ydata(functions.voltdis(xqr, *functions.letters(*a), M))
 
 
 slider.on_changed(value_update)
@@ -198,20 +198,23 @@ plt.ylabel('First peak angular frequency [rad/s]')
 plt.legend()
 plt.show()
 
-dist = np.linspace(50, 350, 100)
+res = 100
+dist = np.linspace(50, 350, res)
+dist1 = np.linspace(nrv_d12[0], nrv_d12[-1], res)
+dist2 = np.linspace(bcv_d12[0], bcv_d12[-1], res)
 
 functions.double_plot(nrv_d13, nrf_d13, nrv13, nrf13, nrv_d13_err, nrf_d13_err, nrv13_err, nrf13_err, dist,
-                      functions.f1dis(dist / 10, 0.01, 0.01, 57, 7, 1e-10) / (2000 * np.pi), dist,
-                      functions.v1dis(dist / 10, 0.04, 0.087, 1067, 1034, 1.128e-10) / np.sqrt(2), "first, merged", "no resistor")
+                      functions.f1dis(dist / 10, 0.1, 0.1, 57, 7, 1e-10) / (2000 * np.pi), dist,
+                      functions.v1dis(dist / 10, 0.1, 0.1, 57, 7, 1e-10) / np.sqrt(2), "first, merged", "no resistor")
 
 functions.double_plot(bcv_d13, bcf_d13, bcv13, bcf13, bcv_d13_err, bcf_d13_err, bcv13_err, bcf13_err, dist,
-                      functions.f1disres(dist / 10, 0.01, 0.01, 57, 1000, 1e-10) / (2000 * np.pi), dist,
-                      functions.v1disres(dist / 10, 0.01, 0.01, 57, 1000, 1e-10) / np.sqrt(2), "first, merged", "resistor")
+                      functions.f1disres(dist / 10, 0.1, 0.1, 57, 1000, 1e-10) / (2000 * np.pi), dist,
+                      functions.v1disres(dist / 10, 0.1, 0.1, 57, 1000, 1e-10) / np.sqrt(2), "first, merged", "resistor")
 
-functions.double_plot(nrv_d12, nrf_d12, nrv2, nrf2, nrv_d12_err, nrf_d12_err, nrv2_err, nrf2_err, dist,
-                      functions.f2dis(dist / 10, 0.01, 0.01, 57, 7, 1e-10) / (2000 * np.pi), dist,
-                      functions.v2dis(dist / 10, 0.01, 0.01, 57, 7, 1e-10) / np.sqrt(2), "second", "no resistor")
+functions.double_plot(nrv_d12, nrf_d12, nrv2, nrf2, nrv_d12_err, nrf_d12_err, nrv2_err, nrf2_err, dist1,
+                      functions.f2dis(dist1 / 10, 0.1, 0.1, 57, 7, 1e-10) / (2000 * np.pi), dist1,
+                      functions.v2dis(dist1 / 10, 0.1, 0.1, 57, 7, 1e-10) / np.sqrt(2), "second", "no resistor")
 
-functions.double_plot(bcv_d12, bcf_d12, bcv2, bcf2, bcv_d12_err, bcf_d12_err, bcv2_err, bcf2_err, dist,
-                      functions.f2disres(dist / 10, 0.01, 0.01, 57, 1007, 1e-10) / (2000 * np.pi), dist,
-                      functions.v2disres(dist / 10, 0.01, 0.01, 57, 1007, 1e-10) / np.sqrt(2), "second", "resistor")
+functions.double_plot(bcv_d12, bcf_d12, bcv2, bcf2, bcv_d12_err, bcf_d12_err, bcv2_err, bcf2_err, dist2,
+                      functions.f2disres(dist2 / 10, 0.1, 0.1, 57, 1000, 1e-10) / (2000 * np.pi), dist2,
+                      functions.v2disres(dist2 / 10, 0.1, 0.1, 57, 1000, 1e-10) / np.sqrt(2), "second", "resistor")
