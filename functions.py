@@ -60,6 +60,17 @@ def voltdis(x, a, b, c, d, e, M):
     return 1e10 * np.sqrt(A ** 2 + B ** 2)
 
 
+def voltdisres(x, a, b, c, d, e, M):
+    """Returns the voltage for an omega (x) for a,b,c,d,e variables and a given M (which corresponds to a specific
+    distance """
+    s = a * x ** 4 - M ** 2 * x ** 4 - c * x ** 2 + e
+    t = d * x - b * x ** 3
+    p = M * x ** 2 * V0
+    A = p * t / (s ** 2 + t ** 2)
+    B = p * s / (s ** 2 + t ** 2)
+    return 1e3 * x * np.sqrt(A ** 2 + B ** 2)
+
+
 def circuit_values(a, b, c, d, e):
     """The function takes as input the values of a,b,c,d,e and returns the corresponding capacitances, resistances
     and so on. We assume C2 = 1e-10. The output is an array of the form [L1,L2,R1,R2,C1]"""
@@ -120,20 +131,20 @@ def roundup(x):
 
 def v1dis(x, L1, L2, R1, R2, C1):
     """Takes as input the distance and circuit values and returns the voltage of the first peak"""
-    xfreq = np.linspace(188e3, 1000000, 10000)
+    xfreq = np.linspace(246e3, 1200e3, 10000)
     y = np.zeros(len(x))
     for i in range(len(x)):
         o = voltdis(xfreq, *letters(L1, L2, R1, R2, C1), mutual(x[i] / 100))
         for j in range(1, len(xfreq) - 1):
             if o[j + 1] < o[j] and o[j - 1] < o[j]:
-                y[i] = xfreq[j]
+                y[i] = o[j]
                 break
     return y
 
 
 def f1dis(x, L1, L2, R1, R2, C1):
     """Takes as input the distance and circuit values and returns the frequency of the first peak"""
-    xfreq = np.linspace(100e3, 1000e3, 10000)
+    xfreq = np.linspace(246e3, 1200e3, 10000)
     y = np.zeros(len(x))
     yfreq = np.zeros(len(x))
     for i in range(len(x)):
@@ -147,23 +158,75 @@ def f1dis(x, L1, L2, R1, R2, C1):
 
 def v2dis(x, L1, L2, R1, R2, C1):
     """Takes as input the distance and circuit values and returns the voltage of the sceond peak"""
-    xfreq = np.linspace(188e3, 1000000, 10000)
+    xfreq = np.linspace(246e3, 1200e3, 10000)
     y = np.zeros(len(x))
     for i in range(len(x)):
         o = voltdis(xfreq, *letters(L1, L2, R1, R2, C1), mutual(x[i] / 100))
         for j in range(1, len(xfreq) - 1):
             if o[j + 1] < o[j] and o[j - 1] < o[j]:
-                y[i] = xfreq[j]
+                y[i] = o[j]
     return y
 
 
 def f2dis(x, L1, L2, R1, R2, C1):
     """Takes as input the distance and circuit values and returns the frequency of the second peak"""
-    xfreq = np.linspace(100e3, 1000e3, 10000)
+    xfreq = np.linspace(246e3, 1200e3, 10000)
     y = np.zeros(len(x))
     yfreq = np.zeros(len(x))
     for i in range(len(x)):
         o = voltdis(xfreq, *letters(L1, L2, R1, R2, C1), mutual(x[i] / 100))
+        for j in range(1, len(xfreq) - 1):
+            if o[j + 1] < o[j] and o[j - 1] < o[j]:
+                yfreq[i] = xfreq[j]
+    return yfreq
+
+
+def v1disres(x, L1, L2, R1, R2, C1):
+    """Takes as input the distance and circuit values and returns the voltage of the first peak"""
+    xfreq = np.linspace(246e3, 1200e3, 10000)
+    y = np.zeros(len(x))
+    for i in range(len(x)):
+        o = voltdisres(xfreq, *letters(L1, L2, R1, R2, C1), mutual(x[i] / 100))
+        for j in range(1, len(xfreq) - 1):
+            if o[j + 1] < o[j] and o[j - 1] < o[j]:
+                y[i] = o[j]
+                break
+    return y
+
+
+def f1disres(x, L1, L2, R1, R2, C1):
+    """Takes as input the distance and circuit values and returns the frequency of the first peak"""
+    xfreq = np.linspace(246e3, 1200e3, 10000)
+    y = np.zeros(len(x))
+    yfreq = np.zeros(len(x))
+    for i in range(len(x)):
+        o = voltdisres(xfreq, *letters(L1, L2, R1, R2, C1), mutual(x[i] / 100))
+        for j in range(1, len(xfreq) - 1):
+            if o[j + 1] < o[j] and o[j - 1] < o[j]:
+                yfreq[i] = xfreq[j]
+                break
+    return yfreq
+
+
+def v2disres(x, L1, L2, R1, R2, C1):
+    """Takes as input the distance and circuit values and returns the voltage of the sceond peak"""
+    xfreq = np.linspace(246e3, 1200e3, 10000)
+    y = np.zeros(len(x))
+    for i in range(len(x)):
+        o = voltdisres(xfreq, *letters(L1, L2, R1, R2, C1), mutual(x[i] / 100))
+        for j in range(1, len(xfreq) - 1):
+            if o[j + 1] < o[j] and o[j - 1] < o[j]:
+                y[i] = o[j]
+    return y
+
+
+def f2disres(x, L1, L2, R1, R2, C1):
+    """Takes as input the distance and circuit values and returns the frequency of the second peak"""
+    xfreq = np.linspace(246e3, 1200e3, 10000)
+    y = np.zeros(len(x))
+    yfreq = np.zeros(len(x))
+    for i in range(len(x)):
+        o = voltdisres(xfreq, *letters(L1, L2, R1, R2, C1), mutual(x[i] / 100))
         for j in range(1, len(xfreq) - 1):
             if o[j + 1] < o[j] and o[j - 1] < o[j]:
                 yfreq[i] = xfreq[j]
@@ -193,5 +256,6 @@ def double_plot(x1, x2, y1, y2, x1err, x2err, y1err, y2err, xfmodel, yfmodel, xv
 
     fig.legend(loc="upper right", bbox_to_anchor=(0.99, 0.75), bbox_transform=ax1.transAxes, fontsize=15)
     plt.tight_layout()
-    plt.savefig("Coil separation v " + title + " peak voltage and resonance frequency, " + resistor + ".jpg", dpi=500)
-    # plt.show()
+    # plt.savefig("Coil separation v " + title + " peak voltage and resonance frequency, " + resistor + ".jpg", dpi=500)
+    plt.show()
+
